@@ -38,50 +38,60 @@ public class OrderService {
 	 
 	 @Autowired
 	    private OrderItemRepository orderItemRepository;
+	 
+	
 
 	   
-	 public Order placeOrder(OrderRequest orderRequest) {
-	        User user = userRepository.findById(orderRequest.getUserId())
-	                .orElseThrow(() -> new RuntimeException("User not found"));
+	 public Order placeOrder(Long userId,OrderRequest orderRequest) {
+		 
+		    User user = userRepository.findById(userId)
+		            .orElseThrow(() -> new RuntimeException("User not found"));
 
-	        Order order = new Order();
-	        order.setUser(user);
-	        order.setDeliveryAddress(orderRequest.getDeliveryAddress());
-	        order.setStatus("PLACED");
+		   
+		    Order order = new Order();
+		    order.setUser(user);
+		    order.setDeliveryAddress(orderRequest.getDeliveryAddress());
+		    order.setStatus("PLACED");
 
-	        List<OrderItem> orderItems = orderRequest.getItems().stream().map(itemDto -> {
-	            Product product = productRepository.findById(itemDto.getProductId())
-	                    .orElseThrow(() -> new RuntimeException("Product not found"));
+		   
+		    
 
-	            OrderItem orderItem = new OrderItem();
-	            orderItem.setProduct(product);
-	            orderItem.setQuantity(itemDto.getQuantity());
-	            orderItem.setOrder(order);
+		  
+		    List<OrderItem> orderItems = orderRequest.getItems().stream().map(itemDto -> {
+		        Product product = productRepository.findById(itemDto.getProductId())
+		                .orElseThrow(() -> new RuntimeException("Product not found"));
 
-	            return orderItem;
-	        }).toList();
+		        OrderItem item = new OrderItem();
+		        item.setOrder(order);            
+		        item.setProduct(product);
+		        item.setQuantity(itemDto.getQuantity());
+		        item.setPrice(product.getPrice());
+		        return item;
+		    }).toList();
 
-	      
-	        double subtotal = orderItems.stream()
-	                .mapToDouble(i -> i.getProduct().getPrice() * i.getQuantity())
-	                .sum();
-	        double deliveryCharge = 50;
-	        double discount = 0;
-	        double finalTotal = subtotal + deliveryCharge - discount;
+		   
+//		    orderItemRepository.saveAll(orderItems);
 
-	        order.setSubtotal(subtotal);
-	        order.setDeliveryCharge(deliveryCharge);
-	        order.setDiscount(discount);
-	        order.setFinalTotal(finalTotal);
+		    
+		    order.setItems(orderItems);
 
-	       
-	        Order savedOrder = orderRepository.save(order);
-	        orderItems.forEach(orderItemRepository::save);
+	
+		    double subtotal = orderItems.stream()
+		            .mapToDouble(i -> i.getPrice() * i.getQuantity())
+		            .sum();
+		    double deliveryCharge = 50;
+		    double discount = 0;
+		    double finalTotal = subtotal + deliveryCharge - discount;
 
-	        savedOrder.setItems(orderItems);
-	        return savedOrder;
-	    }
-	 
+		    order.setSubtotal(subtotal);
+		    order.setDeliveryCharge(deliveryCharge);
+		    order.setDiscount(discount);
+		    order.setFinalTotal(finalTotal);
+
+		   
+		    return orderRepository.save(order);
+		}
+
 	    public List<Order> getAllOrders() {
 	        return orderRepository.findAll();
 	    }

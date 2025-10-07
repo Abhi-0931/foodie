@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import com.foodie.dto.LoginRequest;
 import com.foodie.model.User;
 import com.foodie.repository.UserRepository;
 
@@ -26,16 +30,37 @@ public class UserService {
         return "Signup successful!";
     }
 
-    public String signin(String email, String password) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            return "No account found with this email!";
+//    public String signin(String email, String password) {
+//        Optional<User> user = userRepository.findByEmail(email);
+//        if (user.isEmpty()) {
+//            return "No account found with this email!";
+//        }
+//        if (!user.get().getPassword().equals(password)) {
+//            return "Incorrect password!";
+//        }
+//        return "Login successful!";
+//    }
+    
+    public User signin(String email, String password) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            if (user.getPassword().equals(password)) {
+                return user; // return full user object
+            }
         }
-        if (!user.get().getPassword().equals(password)) {
-            return "Incorrect password!";
-        }
-        return "Login successful!";
+        return null; // login failed
     }
+
+    
+    
+  
+
+
+    
+   
+    
+    
 
 
     public List<User> getAllUsers() {

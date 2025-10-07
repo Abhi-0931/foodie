@@ -1,9 +1,15 @@
 package com.foodie.model;
 
+import java.util.Base64;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
@@ -14,8 +20,20 @@ public class Product {
 	  @GeneratedValue(strategy = GenerationType.IDENTITY)
 	  private Long id;
 	  private String name;    
-	  private double price;  
-	  private String img;
+	  private double price; 
+	  
+	  @Lob
+	  @Basic(fetch = FetchType.LAZY)
+	  @Column(columnDefinition = "LONGBLOB")
+	  private byte[] img;
+	  
+	  public String getImgBase64() {
+	        if (img != null) {
+	            return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(img);
+	        }
+	        return null;
+	    }
+
 	  
 	  
 	public Long getId() {
@@ -36,15 +54,19 @@ public class Product {
 	public void setPrice(double price) {
 		this.price = price;
 	}
-	public String getImg() {
+
+	
+	
+	public byte[] getImg() {
 		return img;
 	}
-	public void setImg(String img) {
+	public void setImg(byte[] img) {
 		this.img = img;
 	}
 	
 	public Product() {}
-	public Product(Long id, String name, double price, String img) {
+	
+	public Product(Long id, String name, double price, byte[] img) {
 		super();
 		this.id = id;
 		this.name = name;

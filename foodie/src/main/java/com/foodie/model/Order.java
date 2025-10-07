@@ -3,6 +3,8 @@ package com.foodie.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,10 +27,12 @@ public class Order {
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonIgnore
 	private User user;
 	
 	
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+//	@JsonIgnore
 	private List<OrderItem> items;
 	
 	
