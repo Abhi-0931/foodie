@@ -3,6 +3,7 @@ package com.foodie.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,8 @@ import com.foodie.service.OrderItemService;
 @RestController
 @RequestMapping("/order-items")
 @CrossOrigin("*") 
+@PreAuthorize(value = "hasAnyAuthority('ROLE_USER')")
+
 public class OrderItemController {
 	
 	@Autowired

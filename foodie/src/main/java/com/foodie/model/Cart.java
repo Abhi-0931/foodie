@@ -25,7 +25,7 @@ public class Cart {
 	    private Long id;
 
 	 @ManyToOne
-	    @JoinColumn(name = "user_id")
+	 @JoinColumn(name = "user_id")
 	    private User user;
 
 	 @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
